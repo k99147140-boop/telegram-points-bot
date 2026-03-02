@@ -48,12 +48,16 @@ async def top(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ===== الفرق =====
 
 async def create_team(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        return
     team = " ".join(context.args)
     data["teams"][team] = 0
     save(data)
     await update.message.reply_text("✅ تم إنشاء الفريق")
 
 async def dpt(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if len(context.args) < 2:
+        return
     team = context.args[0]
     amount = int(context.args[1])
     data["teams"][team] = data["teams"].get(team, 0) + amount
@@ -69,6 +73,9 @@ async def ttop(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ===== تشغيل البوت =====
 
+if not TOKEN:
+    raise ValueError("TOKEN غير موجود في متغيرات البيئة")
+
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("dxp", dxp))
@@ -78,4 +85,4 @@ app.add_handler(CommandHandler("CreaTeam", create_team))
 app.add_handler(CommandHandler("dpt", dpt))
 app.add_handler(CommandHandler("ttop", ttop))
 
-app.run_polling()
+app.run_polling() 
