@@ -16,13 +16,17 @@ def save(data):
     with open(DATA, "w") as f:
         json.dump(data, f, indent=4)
 
+# تأكد إن الملف ينشأ لو غير موجود
+if not os.path.exists(DATA):
+    save({"users": {}, "teams": {}})
+
 data = load()
 
-# ===== الفردي =====
+# ===== المستخدمين =====
 
 async def dxp(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
-        return
+        return await update.message.reply_text("استخدم: /dxp اسم عدد")
     user = context.args[0]
     amount = int(context.args[1])
     data["users"][user] = data["users"].get(user, 0) + amount
@@ -31,7 +35,7 @@ async def dxp(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def rep(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
-        return
+        return await update.message.reply_text("استخدم: /rep اسم عدد")
     user = context.args[0]
     amount = int(context.args[1])
     data["users"][user] = data["users"].get(user, 0) - amount
@@ -49,7 +53,7 @@ async def top(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def create_team(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        return
+        return await update.message.reply_text("استخدم: /CreaTeam اسم الفريق")
     team = " ".join(context.args)
     data["teams"][team] = 0
     save(data)
@@ -57,7 +61,7 @@ async def create_team(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def dpt(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
-        return
+        return await update.message.reply_text("استخدم: /dpt اسم الفريق عدد")
     team = context.args[0]
     amount = int(context.args[1])
     data["teams"][team] = data["teams"].get(team, 0) + amount
@@ -71,7 +75,7 @@ async def ttop(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text += f"{i}- {t} | {p}\n"
     await update.message.reply_text(text)
 
-# ===== تشغيل البوت =====
+# ===== تشغيل =====
 
 if not TOKEN:
     raise ValueError("TOKEN غير موجود في متغيرات البيئة")
